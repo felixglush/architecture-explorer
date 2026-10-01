@@ -53,7 +53,7 @@ example; the default is a TypeScript queue with a deterministic example run.
 - `skills/architecture-explorer/scripts/`: safe scaffolding entry point.
 - `scripts/install-codex.mjs`: copies that whole skill into Codex's discovery path.
 
-`npm run pack:release` creates `architecture-explorer-0.1.0.tgz` for download or
+`npm run pack:release` creates `architecture-explorer-0.1.1.tgz` for download or
 transfer. Extract it and follow the same commands from the resulting `package/`
 directory. The archive contains source and a lockfile, not node_modules. It is a
 standalone distribution; no npm registry publication is configured.

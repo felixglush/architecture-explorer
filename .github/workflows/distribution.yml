@@ -47,7 +47,7 @@ jobs:
         with:
           name: architecture-explorer
           path: release
-      - run: gh release create "$GITHUB_REF_NAME" release/*.tgz release/skills/architecture-explorer/renderer/dist/index.html --repo "$GITHUB_REPOSITORY" --generate-notes
+      - run: gh release create "$GITHUB_REF_NAME" release/*.tgz release/skills/architecture-explorer/renderer/dist/*.html --repo "$GITHUB_REPOSITORY" --generate-notes
         env:
           GH_TOKEN: ${{ github.token }}
 
