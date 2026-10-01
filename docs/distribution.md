@@ -3,17 +3,17 @@
 ## Local development and unmerged previews
 
 The README uses each agent's native marketplace installer. For a local preview,
-clone the PR branch and load it directly:
+clone the repository, check out the branch you are testing, and load it directly:
 
 ```bash
-git clone --branch codex/standalone-plugin https://github.com/felixglush/architecture-explorer.git
+git clone https://github.com/felixglush/architecture-explorer.git
 claude --plugin-dir /absolute/path/to/architecture-explorer
 ```
 
 Codex can register the preview through its native marketplace command:
 
 ```bash
-codex plugin marketplace add felixglush/architecture-explorer --ref codex/standalone-plugin
+codex plugin marketplace add felixglush/architecture-explorer --ref YOUR_BRANCH
 codex plugin add architecture-explorer@architecture-explorer
 ```
 
@@ -104,3 +104,9 @@ the default job-queue example. Both files work without a development server.
 The `webhook-example` workflow artifact contains the standalone webhook HTML.
 Deployment uses the `github-pages` environment; repository environment protection
 rules may require approval. Pages updates do not publish a new plugin release.
+
+## Source highlighting
+
+The inspector uses Shiki with locally bundled language grammars, so highlighted
+code works offline. Unsupported languages render as plain text. Preserve that
+fallback and avoid introducing runtime CDN requests when adding grammars.
