@@ -1,3 +1,4 @@
+import { componentBoundary } from "./core/detail";
 import { Fields } from "./ContractFields";
 import { InputOutput } from "./InputOutput";
 import type { CSSProperties } from "react";
@@ -63,11 +64,12 @@ export function Inspector({
       ? project.replay.snapshot(node.id, run, cursor)
       : { label: "No recorded state available.", value: null };
   const previous = snapshot.previous ?? {};
-  const connections = node
-    ? model.connections.filter(
-        (item) => item.source === node.id || item.target === node.id,
-      )
-    : [];
+  const boundary = componentBoundary(model, node?.id);
+  const connections = [
+    ...new Map(
+      [...boundary.inputs, ...boundary.outputs].map((e) => [e.id, e]),
+    ).values(),
+  ];
   const stateRefs = (node?.stateTypes ?? []).map(
     (type) => model.contracts[type],
   );
@@ -170,7 +172,7 @@ export function Inspector({
                       <span>
                         <strong>{item.label}</strong>
                         <small>
-                          {item.source === node.id
+                          {boundary.members.has(item.source)
                             ? "Connects to " + byId[item.target].title
                             : "Connected from " + byId[item.source].title}
                         </small>

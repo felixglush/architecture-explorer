@@ -1,32 +1,11 @@
+import { fixtureSource } from "../shared/source";
 import code from "./webhook.ts?raw";
 import { simulateWebhook, type DemoStep, type DemoState } from "./webhook";
 import type { ArchitectureProject, Source, ReplayRun } from "../../core/types";
 const path = "src/projects/webhook/webhook.ts";
 const ref = (symbol: string) => ({ path, symbol });
-function source(symbol: string, fields: Source["fields"] = []): Source {
-  const lines = code.split("\n");
-  const start = lines.findIndex(
-    (line) =>
-      line.startsWith(`export interface ${symbol} `) ||
-      line.startsWith(`export function ${symbol}(`),
-  );
-  let end = start;
-  let balance = 0;
-  do {
-    const line = lines[end];
-    balance +=
-      (line.match(/\{/g)?.length ?? 0) - (line.match(/\}/g)?.length ?? 0);
-    end++;
-  } while (balance > 0 && end < lines.length);
-  return {
-    ...ref(symbol),
-    language: "typescript",
-    startLine: start + 1,
-    endLine: end,
-    code: lines.slice(start, end).join("\n"),
-    fields,
-  };
-}
+const source = (symbol: string, fields: Source["fields"] = []) =>
+  fixtureSource(code, path, symbol, fields);
 const sources = [
   source("WebhookEvent", [
     { name: "id", type: "string" },
@@ -38,6 +17,8 @@ const sources = [
     { name: "duplicate", type: "boolean" },
   ]),
   source("receive"),
+  source("claimEvent"),
+  source("scheduleRetry"),
   source("simulateWebhook"),
 ];
 const steps = simulateWebhook();
@@ -60,7 +41,7 @@ const traces: Record<
   retry: {
     title: "503 schedules a retry",
     body: "The scripted transport fails. The same event ID is requeued; the two-second delay is illustrative.",
-    nodes: ["receiver", "worker", "queue"],
+    nodes: ["receiver", "retry-code", "queue"],
     edges: ["response", "retry"],
   },
   resending: {
@@ -72,7 +53,7 @@ const traces: Record<
   delivered: {
     title: "Receiver processes the event once",
     body: "The in-memory receiver adds the event ID to its ledger and returns 200.",
-    nodes: ["receiver", "ledger", "worker"],
+    nodes: ["receive-code", "claim-code", "worker"],
     edges: ["deduplicate", "response"],
   },
   redelivering: {
@@ -84,7 +65,7 @@ const traces: Record<
   duplicate: {
     title: "Duplicate acknowledged without reprocessing",
     body: "The event ID is already in the ledger. The receiver returns 200 with duplicate=true; processed count stays one.",
-    nodes: ["receiver", "ledger", "worker"],
+    nodes: ["receive-code", "claim-code", "worker"],
     edges: ["deduplicate", "response"],
   },
 };
@@ -107,7 +88,7 @@ const run: ReplayRun = {
     decision:
       step.phase === "retry" || step.phase === "duplicate"
         ? {
-            actor: step.phase === "retry" ? "worker" : "receiver",
+            actor: step.phase === "retry" ? "retry-code" : "receive-code",
             tone: step.phase === "retry" ? "warning" : "success",
             label:
               step.phase === "retry"
@@ -124,6 +105,14 @@ function stateAt(run: ReplayRun, cursor: number): DemoState {
   return (run.data as DemoStep[])[cursor].state;
 }
 function projectState(id: string, state: DemoState): Record<string, unknown> {
+  id =
+    (
+      {
+        "retry-code": "worker",
+        "receive-code": "receiver",
+        "claim-code": "ledger",
+      } as Record<string, string>
+    )[id] ?? id;
   if (id === "queue") return { pending: state.pending, retries: state.retries };
   if (id === "worker")
     return { attempts: state.attempts, status: state.status };
@@ -167,19 +156,28 @@ export const webhookProject: ArchitectureProject = {
         id: "all",
         title: "Webhook delivery",
         description: "Enqueue → send → retry → process once",
-        nodes: ["publisher", "queue", "worker", "receiver", "ledger"],
+        nodes: [
+          "publisher",
+          "queue",
+          "worker",
+          "receiver",
+          "ledger",
+          "receive-code",
+          "claim-code",
+          "retry-code",
+        ],
       },
       {
         id: "delivery",
         title: "Delivery and retries",
         description: "Queue ownership and transport responses",
-        nodes: ["queue", "worker", "receiver"],
+        nodes: ["queue", "worker", "receiver", "receive-code", "retry-code"],
       },
       {
         id: "receipt",
         title: "Idempotent receiver",
         description: "Duplicate detection and acknowledgement",
-        nodes: ["worker", "receiver", "ledger"],
+        nodes: ["worker", "receiver", "ledger", "receive-code", "claim-code"],
       },
     ],
     components: [
@@ -195,6 +193,8 @@ export const webhookProject: ArchitectureProject = {
       },
       {
         id: "queue",
+        detail: "implementation" as const,
+        parent: "worker",
         title: "Delivery queue",
         service: "delivery",
         icon: "layers",
@@ -225,6 +225,8 @@ export const webhookProject: ArchitectureProject = {
       },
       {
         id: "ledger",
+        detail: "implementation" as const,
+        parent: "receiver",
         title: "Idempotency ledger",
         service: "consumer",
         icon: "database",
@@ -233,6 +235,22 @@ export const webhookProject: ArchitectureProject = {
         sources: [ref("receive")],
         stateTypes: [],
       },
+      ...[
+        ["receive-code", "receive", "receiver", "consumer"],
+        ["claim-code", "claimEvent", "ledger", "consumer"],
+        ["retry-code", "scheduleRetry", "worker", "delivery"],
+      ].map(([id, title, parent, service]) => ({
+        id,
+        title,
+        parent,
+        service,
+        detail: "code" as const,
+        icon: "code",
+        summary: `Execute ${title} in the teaching fixture.`,
+        state: "Uses its owning component's state.",
+        sources: [ref(title)],
+        stateTypes: [],
+      })),
     ].map((c) => ({ ...c, responsibilities: [c.summary] })),
     contracts: { WebhookEvent: ref("WebhookEvent"), Receipt: ref("Receipt") },
     sources: Object.fromEntries(sources.map((s) => [`${path}:${s.symbol}`, s])),
@@ -264,7 +282,7 @@ export const webhookProject: ArchitectureProject = {
       {
         id: "send",
         source: "worker",
-        target: "receiver",
+        target: "receive-code",
         label: "POST webhook",
         kind: "event",
         contract: "WebhookEvent",
@@ -273,7 +291,7 @@ export const webhookProject: ArchitectureProject = {
       },
       {
         id: "response",
-        source: "receiver",
+        source: "receive-code",
         target: "worker",
         label: "503 / 200",
         kind: "response",
@@ -282,7 +300,7 @@ export const webhookProject: ArchitectureProject = {
       },
       {
         id: "retry",
-        source: "worker",
+        source: "retry-code",
         target: "queue",
         label: "Retry same ID",
         kind: "event",
@@ -292,12 +310,12 @@ export const webhookProject: ArchitectureProject = {
       },
       {
         id: "deduplicate",
-        source: "receiver",
-        target: "ledger",
+        source: "receive-code",
+        target: "claim-code",
         label: "Check / store ID",
         kind: "state",
         description:
-          "receive checks Set.has and only adds a new ID. No separate transaction or persistent store is modeled.",
+          "claimEvent checks Set.has and only adds a new ID. No separate transaction or persistent store is modeled.",
       },
     ].map((e) => ({
       ...e,

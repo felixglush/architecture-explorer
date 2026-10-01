@@ -8,7 +8,7 @@ test("webhook example traces a failed attempt, retry and duplicate without proce
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/webhook.html?run=webhook-retry");
   await expect(page.locator(".brand")).toContainText("WEBHOOK DELIVERY");
-  await expect(page.locator(".component-card")).toHaveCount(5);
+  await expect(page.locator(".component-card")).toHaveCount(3);
   await expect(page.locator(".run-player")).toContainText("Synthetic example");
   await expect(page.getByTestId("metric-processed")).toHaveText("0");
   const next = page.getByRole("button", { name: "Next step", exact: true });
@@ -37,7 +37,7 @@ test("webhook example traces a failed attempt, retry and duplicate without proce
   const inspector = page.getByRole("complementary", { name: "Inspector" });
   await inspector.getByRole("tab", { name: "Code", exact: true }).click();
   await expect(inspector.locator(".code-block")).toContainText(
-    "processed.has(event.id)",
+    "claimEvent(event.id, processed)",
   );
   await inspector.getByRole("tab", { name: "I/O", exact: true }).click();
   await inspector

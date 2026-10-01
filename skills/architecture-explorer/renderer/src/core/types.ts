@@ -12,9 +12,12 @@ export interface Source extends SourceRef {
   url?: string;
   fields: { name: string; type: string }[];
 }
+export type DetailLevel = "overview" | "implementation" | "code";
 export interface Component {
-  /** Optional supporting infrastructure, revealed by the detail toggle or inspection. */
-  detail?: "implementation";
+  /** Minimum detail level; omitted for main overview components. */
+  detail?: "implementation" | "code";
+  /** Coarser owning component, used when this detail is collapsed. */
+  parent?: string;
   id: string;
   title: string;
   service: string;

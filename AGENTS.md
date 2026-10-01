@@ -21,6 +21,9 @@ Local loading and the skill-copy helper belong in docs/distribution.md.
 
 Keep the synthetic webhook fixture, its source snapshots, ANALYSIS.md and browser
 walkthrough consistent. It makes no network requests and is not production evidence.
-The build copies index.html to webhook.html; the composition root chooses that
-example by filename. Pages deploys only verified dist output from main through the
+The build copies index.html to webhook.html, llm-rate-limiter.html and
+url-shortener.html; the composition root chooses the example by filename.
+Keep all examples, source snapshots, ANALYSIS.md references and offline replay tests
+consistent. Verify each supported detail level, including selection and replay
+preservation. Put hierarchy metadata in adapters, never project-specific UI branches. Pages deploys only verified dist output from main through the
 Distribution workflow. Preserve subpath-safe/offline assets and README example links.

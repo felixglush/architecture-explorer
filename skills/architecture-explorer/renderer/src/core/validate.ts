@@ -1,3 +1,4 @@
+import { detailRank } from "./detail";
 import type { ArchitectureProject, SourceRef } from "./types";
 export function validateProject(project: ArchitectureProject) {
   const d = project.document;
@@ -39,6 +40,21 @@ export function validateProject(project: ArchitectureProject) {
     c.sources.forEach(ref);
     c.stateTypes.forEach(contract);
     checkModes(c.modes);
+    if (c.detail && !Object.hasOwn(detailRank, c.detail))
+      fail(`unknown detail level ${c.detail}`);
+    if (c.detail === "code" && (!c.parent || !c.sources.length))
+      fail(`code detail requires parent and source: ${c.id}`);
+    if (c.parent !== undefined) {
+      const parent = d.components.find((p) => p.id === c.parent);
+      if (!parent) fail(`unknown parent ${c.parent}`);
+      if (
+        detailRank[parent!.detail ?? "overview"] >=
+        detailRank[c.detail ?? "overview"]
+      )
+        fail(`parent must be coarser than ${c.id}`);
+      if (parent!.service !== c.service)
+        fail(`parent service mismatch for ${c.id}`);
+    }
   });
   d.connections.forEach((e) => {
     if (!components.has(e.source) || !components.has(e.target))

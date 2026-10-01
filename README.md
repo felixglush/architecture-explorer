@@ -5,6 +5,7 @@ to review a repository and map its components, service boundaries, connections,
 and important flows.
 
 - Pan and zoom through the architecture, or focus on a particular flow.
+- Switch detail from Overview to Implementation to Code, when the canvas provides those levels.
 - Click a component to inspect its source code, state ownership, and input/output contracts.
 - Step through an example or recorded flow to follow messages and state changes, when available.
 - Share the canvas as a single HTML file that opens in a browser without a server.
@@ -15,7 +16,24 @@ and important flows.
 or [download it for offline viewing](https://github.com/felixglush/architecture-explorer/releases/latest/download/webhook.html).
 
 Follow an event through a queue, a failed delivery, a retry, and duplicate detection.
-Click components to inspect code and state. The demo uses synthetic events.
+Click components to inspect code and state. All demos use synthetic events.
+
+Also explore:
+
+- [LLM rate limiter](https://felixglush.github.io/architecture-explorer/llm-rate-limiter.html?run=llm-rate-limiter): request and token quotas, rejection, token reservation, and usage reconciliation.
+- [URL shortener](https://felixglush.github.io/architecture-explorer/url-shortener.html?run=url-shortener): code creation, cache misses and hits, and expiration.
+
+**Level of detail** controls how much structure is visible: Overview shows the main
+components, Implementation adds supporting modules and stores, and Code adds
+source-backed functions. Hidden connections and replay highlights map to the owning
+component. Your selection and replay position stay intact. **Focus** chooses which
+part of the system to explore.
+
+The two system-design examples draw on Hello Interview's
+[distributed rate limiter](https://www.hellointerview.com/learn/system-design/problem-breakdowns/distributed-rate-limiter)
+and [URL shortener](https://www.hellointerview.com/learn/system-design/problem-breakdowns/bitly)
+articles. They are small local teaching models; the LLM quota adaptation does not
+describe ChatGPT's actual implementation.
 
 ## Install
 

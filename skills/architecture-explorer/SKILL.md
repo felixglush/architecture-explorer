@@ -76,3 +76,25 @@ structure changes. No target-language extractor is assumed.
 The scaffold is a versioned source copy. For upgrades, generate into a separate new
 folder and review the renderer diff before applying it; preserve the project's adapter
 and custom tests. Updating this installed skill does not silently update existing canvases.
+
+
+## Detail levels
+
+Author one canonical graph with progressively disclosed structure. Missing `detail`
+means Overview; use `detail: "implementation"` for supporting modules/stores and
+`detail: "code"` for actual source-backed functions/classes. Give each detailed node
+an owning `parent` at a strictly coarser level in the same service. Code nodes must
+have source references. Prefer a small overview that explains the main flow; only
+add levels justified by repository evidence. Do not invent internals to fill levels.
+
+Connections can reference detailed endpoints: the renderer projects them to visible
+owners when collapsed, omits collapsed internal edges, and preserves original IDs
+for inspection and replay. Include descendants in applicable focus presets. Detail
+is cumulative and independent of Focus; changing levels retains selection and
+replay cursor. Legacy implementation nodes without parents remain supported but
+cannot project onto an owner. New adapters should always supply owners.
+
+Validate meaningful structure and source links at every supported level, and replay
+the same flow through each. Clearly distinguish observed execution from synthetic
+walkthroughs. The bundled webhook, LLM limiter and URL shortener are examples of
+adapter authoring, not required architecture templates for other repositories.

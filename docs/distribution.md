@@ -110,3 +110,7 @@ rules may require approval. Pages updates do not publish a new plugin release.
 The inspector uses Shiki with locally bundled language grammars, so highlighted
 code works offline. Unsupported languages render as plain text. Preserve that
 fallback and avoid introducing runtime CDN requests when adding grammars.
+
+The verified build also emits `webhook.html`, `llm-rate-limiter.html` and
+`url-shortener.html`. Each works offline; Pages publishes them from the tested
+main build, and subsequent releases include them as HTML assets.
