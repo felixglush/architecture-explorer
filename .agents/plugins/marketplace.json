@@ -1,0 +1,20 @@
+{
+  "name": "architecture-explorer",
+  "interface": {
+    "displayName": "Architecture Explorer"
+  },
+  "plugins": [
+    {
+      "name": "architecture-explorer",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "name": "architecture-explorer",
+  "owner": { "name": "felixglush" },
+  "plugins": [{ "name": "architecture-explorer", "source": "./", "description": "Source-backed interactive architecture canvases", "version": "0.1.0" }]
+}

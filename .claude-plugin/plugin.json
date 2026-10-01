@@ -1,0 +1,8 @@
+{
+  "name": "architecture-explorer",
+  "version": "0.1.0",
+  "description": "Create source-backed architecture canvases with code inspection and optional replay.",
+  "author": { "name": "felixglush" },
+  "repository": "https://github.com/felixglush/architecture-explorer",
+  "keywords": ["architecture", "react-flow", "codebase", "diagrams"]
+}
