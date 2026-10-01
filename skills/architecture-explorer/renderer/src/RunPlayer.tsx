@@ -21,6 +21,7 @@ import {
 } from "./core/project";
 import type { DemoRun, RunRecord } from "./core/project";
 interface Props {
+  guided?: boolean;
   run: DemoRun;
   runs: DemoRun[];
   onRun: (run: DemoRun) => void;
@@ -32,6 +33,7 @@ interface Props {
   onClose: () => void;
 }
 export function RunPlayer({
+  guided = false,
   run,
   runs,
   onRun,
@@ -127,7 +129,7 @@ export function RunPlayer({
   }
   return (
     <section
-      className={`run-player ${journalOpen ? "journal-open" : ""}`}
+      className={`run-player ${guided ? "run-guided" : journalOpen ? "journal-open" : ""}`}
       aria-label={adapter.labels.region}
     >
       <div className="run-toolbar">
@@ -151,14 +153,16 @@ export function RunPlayer({
             </option>
           ))}
         </select>
-        <Button
-          variant="ghost"
-          className="text-button"
-          aria-expanded={journalOpen}
-          onClick={() => setJournalOpen(!journalOpen)}
-        >
-          Event journal
-        </Button>
+        {!guided && (
+          <Button
+            variant="ghost"
+            className="text-button"
+            aria-expanded={journalOpen}
+            onClick={() => setJournalOpen(!journalOpen)}
+          >
+            Event journal
+          </Button>
+        )}
         {adapter.import && (
           <Button
             variant="ghost"
@@ -238,7 +242,7 @@ export function RunPlayer({
           <small>{adapter.labels.decisionHelp}</small>
         </div>
       )}
-      <div className="run-main">
+      <div className="run-main" hidden={guided}>
         <div className="event-journal" hidden={!journalOpen}>
           <div className="journal-heading">
             <span>EVENT JOURNAL</span>

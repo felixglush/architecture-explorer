@@ -1,3 +1,4 @@
+import { StepGuide } from "./StepGuide";
 import { Button } from "./components/ui/button";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ReactFlowProvider } from "@xyflow/react";
@@ -56,6 +57,7 @@ function Explorer({ initialRunId }: { initialRunId?: string }) {
   const [privateFlows, setPrivateFlows] = useState(true);
   const [labels, setLabels] = useState(false);
   const [follow, setFollow] = useState(true);
+  const [guideOpen, setGuideOpen] = useState(false);
   const [sidebar, setSidebar] = useState(false);
   const [replay, setReplay] = useState(Boolean(initialRun));
   const [runs, setRuns] = useState<DemoRun[]>(demoRuns);
@@ -205,6 +207,19 @@ function Explorer({ initialRunId }: { initialRunId?: string }) {
           <kbd>/</kbd>
         </button>
         <div className="toolbar-spacer" />
+        {replay && (
+          <Button
+            variant="outline"
+            aria-pressed={guideOpen && !selected}
+            onClick={() => {
+              setGuideOpen(!guideOpen || Boolean(selected));
+              setSelected(null);
+              setPlaying(false);
+            }}
+          >
+            {guideOpen && selected ? "Back to step guide" : "Step guide"}
+          </Button>
+        )}
         <Button
           disabled={!canReplay}
           className="walkthrough-button"
@@ -284,6 +299,18 @@ function Explorer({ initialRunId }: { initialRunId?: string }) {
             onClear={clear}
           />
         </main>
+        {replay && run && guideOpen && !selected && (
+          <StepGuide
+            run={run}
+            cursor={cursor}
+            onStep={(index) => {
+              setPlaying(false);
+              setCursor(index);
+            }}
+            onInspect={inspect}
+            onClose={() => setGuideOpen(false)}
+          />
+        )}
         {selected && (
           <Inspector
             selected={selected}
@@ -300,6 +327,7 @@ function Explorer({ initialRunId }: { initialRunId?: string }) {
       </div>
       {replay && run && adapter && (
         <RunPlayer
+          guided={guideOpen && !selected}
           run={run}
           runs={runs}
           onRun={chooseRun}

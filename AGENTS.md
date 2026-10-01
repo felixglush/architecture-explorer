@@ -27,3 +27,7 @@ Keep all examples, source snapshots, ANALYSIS.md references and offline replay t
 consistent. Verify each supported detail level, including selection and replay
 preservation. Put hierarchy metadata in adapters, never project-specific UI branches. Pages deploys only verified dist output from main through the
 Distribution workflow. Preserve subpath-safe/offline assets and README example links.
+
+Keep StepGuide synchronized with the shared replay cursor. It must consume generic
+trace, connection, payload and snapshot contracts without interpreting domain fields.
+Verify guide-to-inspector navigation, offline examples and narrow screens when editing it.
