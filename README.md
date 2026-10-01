@@ -1,24 +1,26 @@
 # Architecture Explorer
 
-Ask Codex or Claude to review a codebase and turn it into an interactive architecture
-canvas—with service boundaries, connections, source code, state, and optional replay.
-The agent chooses the content from the code; the bundled frontend preserves the
-same notebook-style design across repositories.
+Explore how a codebase fits together in an interactive canvas. Ask Codex or Claude
+to review a repository and map its components, service boundaries, connections,
+and important flows.
 
-## Try the example
+- Pan and zoom through the architecture, or focus on a particular flow.
+- Click a component to inspect its source code, state ownership, and input/output contracts.
+- Step through an example or recorded flow to follow messages and state changes, when available.
+- Share the canvas as a single HTML file that opens in a browser without a server.
 
-[Open the webhook walkthrough](https://felixglush.github.io/architecture-explorer/webhook.html?run=webhook-retry)
-— explore a queue, a failed delivery, a retry, and duplicate detection. Click
-components to inspect code and state, or step through the synthetic events.
+## Try it
 
-This is a deterministic teaching model, not a live webhook service or production
-trace. No requests are sent. The same canvas is available as the `webhook-example`
-HTML artifact in [successful workflow runs](https://github.com/felixglush/architecture-explorer/actions/workflows/distribution.yml).
+[Explore the webhook demo](https://felixglush.github.io/architecture-explorer/webhook.html?run=webhook-retry)
+or [download it for offline viewing](https://github.com/felixglush/architecture-explorer/releases/latest/download/webhook.html).
+
+Follow an event through a queue, a failed delivery, a retry, and duplicate detection.
+Click components to inspect code and state. The demo uses synthetic events.
 
 ## Install
 
-Install through your agent's plugin marketplace. You need Node 24+ and npm to build
-a canvas; viewing the generated HTML only needs a browser.
+You need Node 24+ and npm to generate a canvas, plus a version of your agent that
+supports plugins. Anyone viewing the generated HTML only needs a browser.
 
 ### Claude Code
 
@@ -38,26 +40,31 @@ codex plugin marketplace add felixglush/architecture-explorer
 codex plugin add architecture-explorer@architecture-explorer
 ```
 
-## Use
+## Create a canvas
 
 Start a new session in the repository you want to visualize. Select the Architecture
-Explorer plugin and ask: **“Review this codebase and build an architecture canvas.”**
+Explorer plugin and ask:
 
-The agent generates `architecture/dist/index.html`. Open it locally or share it;
-no server is needed to view it.
+> Review this codebase and build an architecture canvas. Show the main components,
+> their connections, and a walkthrough of an important flow.
 
-## What ships
+You can narrow the request—for example, “Show how an incoming webhook reaches the
+database, including retries and error handling.”
 
-This GitHub repository hosts a marketplace catalog containing one plugin: the agent
-skill plus its frontend. It is not published to npm or listed in a central app store.
+The agent reviews the source and generates `architecture/dist/index.html`. Open
+that file to explore the canvas, or share it with someone reviewing the codebase.
+Code snapshots and available example data are included in the file.
 
-The GitHub workflow tests and builds the plugin, then uploads a source archive and
-example HTML. Pushing a `v*` version tag also publishes a GitHub release. It
-also deploys the example to GitHub Pages after checks pass on `main`. PRs and
-release tags do not deploy Pages.
+Replay and state snapshots depend on the evidence available in your repository.
+Illustrative walkthroughs are labeled separately from recorded execution.
 
-**Shiki** highlights code in the inspector. Its supported language grammars are
-bundled for offline use; other languages display as plain text.
+## Keep it current
 
-See [development and upgrades](docs/distribution.md) or
-[the agent workflow](skills/architecture-explorer/SKILL.md).
+The canvas is a snapshot of your codebase. After changing the code, ask the agent:
+
+> Update the architecture canvas to reflect the current code and refresh its walkthroughs.
+
+Updating the plugin does not automatically update previously generated canvases.
+
+For contributing or customizing the renderer, see the
+[development guide](docs/distribution.md).
