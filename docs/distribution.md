@@ -2,8 +2,7 @@
 
 ## Local development and unmerged previews
 
-The README uses each agent's native marketplace installer. Those default-branch
-commands become available when the implementation PR merges. For a local preview,
+The README uses each agent's native marketplace installer. For a local preview,
 clone the PR branch and load it directly:
 
 ```bash
@@ -89,3 +88,19 @@ labeled separately from recorded execution.
 See [the skill](../skills/architecture-explorer/SKILL.md),
 [the contracts](../skills/architecture-explorer/renderer/src/core/types.ts), and
 [provenance and third-party notices](../NOTICE.md).
+
+## GitHub Pages example
+
+In Settings → Pages, select **GitHub Actions** as the source. No `/docs` publishing
+folder or Static HTML starter workflow is needed. The Distribution workflow reuses
+its verified build and deploys only the renderer's `dist/` directory after a push
+to `main` or a manual run on `main`. PRs build downloadable artifacts without deployment.
+
+`dist/webhook.html` selects the synthetic webhook adapter by filename. The README
+link adds `?run=webhook-retry` to open its paused walkthrough. It works under the
+repository's Pages subpath; all assets are bundled. `dist/index.html` still opens
+the default job-queue example. Both files work without a development server.
+
+The `webhook-example` workflow artifact contains the standalone webhook HTML.
+Deployment uses the `github-pages` environment; repository environment protection
+rules may require approval. Pages updates do not publish a new plugin release.
