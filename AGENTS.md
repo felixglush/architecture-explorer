@@ -18,3 +18,9 @@ Generated canvases are explicit source copies; upgrades require review.
 Use native marketplace installation as the README default. Keep the portable root
 manifest, Codex catalog and Claude catalog consistent and included in the archive.
 Local loading and the skill-copy helper belong in docs/distribution.md.
+
+Keep the synthetic webhook fixture, its source snapshots, ANALYSIS.md and browser
+walkthrough consistent. It makes no network requests and is not production evidence.
+The build copies index.html to webhook.html; the composition root chooses that
+example by filename. Pages deploys only verified dist output from main through the
+Distribution workflow. Preserve subpath-safe/offline assets and README example links.

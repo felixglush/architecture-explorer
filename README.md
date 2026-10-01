@@ -5,13 +5,20 @@ canvas—with service boundaries, connections, source code, state, and optional 
 The agent chooses the content from the code; the bundled frontend preserves the
 same notebook-style design across repositories.
 
+## Try the example
+
+[Open the webhook walkthrough](https://felixglush.github.io/architecture-explorer/webhook.html?run=webhook-retry)
+— explore a queue, a failed delivery, a retry, and duplicate detection. Click
+components to inspect code and state, or step through the synthetic events.
+
+This is a deterministic teaching model, not a live webhook service or production
+trace. No requests are sent. The same canvas is available as the `webhook-example`
+HTML artifact in [successful workflow runs](https://github.com/felixglush/architecture-explorer/actions/workflows/distribution.yml).
+
 ## Install
 
 Install through your agent's plugin marketplace. You need Node 24+ and npm to build
 a canvas; viewing the generated HTML only needs a browser.
-
-These default-branch commands become available when [PR #1](https://github.com/felixglush/architecture-explorer/pull/1)
-merges. Contributors can use the [preview instructions](docs/distribution.md).
 
 ### Claude Code
 
@@ -45,8 +52,9 @@ This GitHub repository hosts a marketplace catalog containing one plugin: the ag
 skill plus its frontend. It is not published to npm or listed in a central app store.
 
 The GitHub workflow tests and builds the plugin, then uploads a source archive and
-example HTML. Pushing a `v*` version tag also publishes a GitHub release. It does
-not deploy a website.
+example HTML. Pushing a `v*` version tag also publishes a GitHub release. It
+also deploys the example to GitHub Pages after checks pass on `main`. PRs and
+release tags do not deploy Pages.
 
 **Shiki** highlights code in the inspector. Its supported language grammars are
 bundled for offline use; other languages display as plain text.
