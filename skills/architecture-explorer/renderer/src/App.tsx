@@ -15,7 +15,7 @@ import {
   decisionHighlight,
   eventsOf,
 } from "./core/project";
-import type { ArchitectureProject } from "./core/types";
+import type { ArchitectureProject, DetailLevel } from "./core/types";
 import type { DemoRun, Mode } from "./core/project";
 
 export default function App({
@@ -71,7 +71,7 @@ function Explorer({ initialRunId }: { initialRunId?: string }) {
       : 0,
   );
   const [playing, setPlaying] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
+  const [detailLevel, setDetailLevel] = useState<DetailLevel>("overview");
   const [hasReplayed, setHasReplayed] = useState(Boolean(initialRun));
   const events = useMemo(() => eventsOf(run), [run]);
   const trace = useMemo(
@@ -254,8 +254,8 @@ function Explorer({ initialRunId }: { initialRunId?: string }) {
             setPrivateFlows={setPrivateFlows}
             follow={follow}
             setFollow={setFollow}
-            showDetails={showDetails}
-            setShowDetails={setShowDetails}
+            detailLevel={detailLevel}
+            setDetailLevel={setDetailLevel}
           />
           <div className="canvas-heading">
             <div>
@@ -271,7 +271,7 @@ function Explorer({ initialRunId }: { initialRunId?: string }) {
           </div>
           <Graph
             view={view}
-            showDetails={showDetails}
+            detailLevel={detailLevel}
             mode={mode}
             privateFlows={privateFlows}
             labels={labels}

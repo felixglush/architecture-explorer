@@ -1,3 +1,5 @@
+import type { DetailLevel } from "./core/types";
+import { projectDetail } from "./core/detail";
 import { useDiagramLayout } from "./diagram/useDiagramLayout";
 import { routePath, CARD_WIDTH, CARD_HEIGHT } from "./diagram/layout";
 import type { DiagramRoute, DiagramPort } from "./diagram/layout";
@@ -217,7 +219,7 @@ const edgeTypes = { message: MessageEdge };
 interface Props {
   decision: DecisionHighlight | null;
   view: string;
-  showDetails: boolean;
+  detailLevel: DetailLevel;
   mode: Mode;
   privateFlows: boolean;
   labels: boolean;
@@ -231,7 +233,7 @@ interface Props {
 export function Graph({
   decision,
   view,
-  showDetails,
+  detailLevel,
   mode,
   privateFlows,
   labels,
@@ -242,12 +244,11 @@ export function Graph({
   onSelect,
   onClear,
 }: Props) {
-  const { byId, colors, model, visibleComponents, visibleConnections } =
-    useProject();
+  const { byId, colors, model, visibleComponents } = useProject();
   const api = useReactFlow();
   const container = useRef<HTMLDivElement>(null);
   const { zoom } = useViewport();
-  const { components, services, messages } = useMemo(() => {
+  const { components, services, messages, representative } = useMemo(() => {
     const revealed = new Set(follow ? activeNodes : []);
     if (follow)
       model.connections
@@ -264,29 +265,21 @@ export function Graph({
           revealed.add(e.source);
           revealed.add(e.target);
         });
-    const base = new Set(
-      visibleComponents(view, mode)
-        .filter((c) => showDetails || !c.detail)
-        .map((c) => c.id),
-    );
-    const components = model.components.filter(
-      (c) =>
-        (base.has(c.id) || revealed.has(c.id)) &&
-        (!c.modes || c.modes.includes(mode)),
-    );
-    const services = model.services.filter((service) =>
-      components.some((node) => node.service === service.id),
-    );
-    const messages = visibleConnections(
-      components.map((node) => node.id),
+    const projected = projectDetail(
+      model,
+      detailLevel,
+      [...visibleComponents(view, mode).map((c) => c.id), ...revealed],
       mode,
       privateFlows,
     );
-    return { components, services, messages };
+    const services = model.services.filter((service) =>
+      projected.components.some((c) => c.service === service.id),
+    );
+    return { ...projected, services };
   }, [
     view,
     mode,
-    showDetails,
+    detailLevel,
     follow,
     activeNodes,
     activeEdges,
@@ -294,7 +287,6 @@ export function Graph({
     privateFlows,
     model,
     visibleComponents,
-    visibleConnections,
   ]);
   const arranged = useDiagramLayout({
     services: services.map((s) => ({ id: s.id })),
@@ -309,15 +301,31 @@ export function Graph({
   const layout = arranged?.layout;
   const { nodes, edges } = useMemo(() => {
     if (!layout) return { nodes: [], edges: [] };
-    const focusNodes = new Set(activeNodes);
+    const focusNodes = new Set(
+      activeNodes.map(representative).filter((id): id is string => !!id),
+    );
     const focusEdges = new Set(activeEdges);
+    model.connections
+      .filter(
+        (e) =>
+          activeEdges.includes(e.id) ||
+          (selected?.kind === "message" && selected.id === e.id),
+      )
+      .forEach((e) => {
+        for (const id of [e.source, e.target]) {
+          const owner = representative(id);
+          if (owner) focusNodes.add(owner);
+        }
+      });
     if (selected?.kind === "component") {
-      focusNodes.add(selected.id);
+      const owner = representative(selected.id);
+      if (owner) focusNodes.add(owner);
       if (!activeNodes.length)
         messages
           .filter(
             (edge) =>
-              edge.source === selected.id || edge.target === selected.id,
+              edge.source === representative(selected.id) ||
+              edge.target === representative(selected.id),
           )
           .forEach((edge) => {
             focusNodes.add(edge.source);
@@ -370,7 +378,10 @@ export function Graph({
             ports: layout.ports[component.id],
             tone: service.color,
             active: focusNodes.has(component.id),
-            decision: decision?.actor === component.id ? decision : null,
+            decision:
+              decision && representative(decision.actor) === component.id
+                ? decision
+                : null,
             dim: focus && !focusNodes.has(component.id),
             onCode: (id: string) => onSelect("component", id, true),
           },
@@ -432,13 +443,14 @@ export function Graph({
     byId,
     colors,
     visibleComponents,
-    visibleConnections,
+    representative,
   ]);
   const cameraBounds = useMemo(() => {
     if (!layout) return undefined;
     if (!follow || !activeNodes.length) return layout.bounds;
     const points = activeNodes.flatMap((id) => {
-      const p = layout.positions[id];
+      const owner = representative(id);
+      const p = owner ? layout.positions[owner] : undefined;
       return p ? [p, { x: p.x + CARD_WIDTH, y: p.y + CARD_HEIGHT }] : [];
     });
     activeEdges.forEach((id) =>
@@ -453,7 +465,7 @@ export function Graph({
       width: Math.max(...points.map((p) => p.x)) - x,
       height: Math.max(...points.map((p) => p.y)) - y,
     };
-  }, [layout, follow, activeNodes, activeEdges]);
+  }, [layout, follow, activeNodes, activeEdges, representative]);
   useEffect(() => {
     if (!api.viewportInitialized || !cameraBounds) return;
     const frame = requestAnimationFrame(() => {
@@ -479,7 +491,10 @@ export function Graph({
               .flatMap((edge) => [edge.source, edge.target])
           : activeNodes;
     api.fitView({
-      nodes: ids.map((id) => ({ id })),
+      nodes: ids
+        .map(representative)
+        .filter((id): id is string => !!id)
+        .map((id) => ({ id })),
       padding: 0.4,
       maxZoom: 1.25,
       duration: 350,

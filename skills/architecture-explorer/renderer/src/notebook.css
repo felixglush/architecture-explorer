@@ -676,3 +676,27 @@ summary:focus-visible {
     height: clamp(140px, calc(60dvh - 270px), 300px);
   }
 }
+
+.detail-level {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.detail-level select {
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 5px 7px;
+  background: var(--paper, #fafbf5);
+  color: inherit;
+}
+@media (max-width: 900px) {
+  .canvas-toolbar {
+    flex-wrap: wrap;
+  }
+  .detail-level {
+    margin-left: 0;
+  }
+}

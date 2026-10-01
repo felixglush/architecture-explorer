@@ -1,3 +1,4 @@
+import { componentBoundary } from "./core/detail";
 import { ArrowRight, ExternalLink } from "lucide-react";
 import { Button } from "./components/ui/button";
 import { Badge } from "./components/ui/badge";
@@ -22,12 +23,7 @@ export function InputOutput({
   onSelect: (kind: "component" | "message", id: string) => void;
 }) {
   const { project, model, byId } = useProject();
-  const inputs = model.connections.filter(
-    (edge) => edge.target === componentId,
-  );
-  const outputs = model.connections.filter(
-    (edge) => edge.source === componentId,
-  );
+  const { inputs, outputs } = componentBoundary(model, componentId);
   const recorded =
     componentId && run
       ? project.replay?.recordedIO?.(componentId, run, cursor)

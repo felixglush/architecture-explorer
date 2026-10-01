@@ -32,6 +32,12 @@ jobs:
           path: skills/architecture-explorer/renderer/dist/webhook.html
       - uses: actions/upload-artifact@v4
         with:
+          name: system-design-examples
+          path: |
+            skills/architecture-explorer/renderer/dist/llm-rate-limiter.html
+            skills/architecture-explorer/renderer/dist/url-shortener.html
+      - uses: actions/upload-artifact@v4
+        with:
           name: architecture-explorer
           path: |
             architecture-explorer-*.tgz

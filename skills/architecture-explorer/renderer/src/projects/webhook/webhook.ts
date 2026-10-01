@@ -25,9 +25,19 @@ export interface DemoStep {
 
 /** The event ID makes this illustrative receiver idempotent within one process. */
 export function receive(event: WebhookEvent, processed: Set<string>): Receipt {
-  const duplicate = processed.has(event.id);
-  if (!duplicate) processed.add(event.id);
+  const duplicate = !claimEvent(event.id, processed);
   return { status: 200, duplicate };
+}
+
+export function claimEvent(id: string, processed: Set<string>): boolean {
+  if (processed.has(id)) return false;
+  processed.add(id);
+  return true;
+}
+export function scheduleRetry(state: DemoState): void {
+  state.pending = 1;
+  state.retries += 1;
+  state.status = "retry scheduled";
 }
 
 /** A fake transport fails once, succeeds on retry, then redelivers the same event. */
@@ -54,9 +64,7 @@ export function simulateWebhook(): DemoStep[] {
   state.attempts = 1;
   state.status = "sending";
   record("sending", { attempt: 1 });
-  state.pending = 1;
-  state.retries = 1;
-  state.status = "retry scheduled";
+  scheduleRetry(state);
   record("retry", {
     status: 503,
     retryAfterSeconds: 2,

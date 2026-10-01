@@ -1,6 +1,6 @@
 import { copyFileSync } from "node:fs";
-// One self-contained build; the composition root selects the example by filename.
-copyFileSync(
-  new URL("../dist/index.html", import.meta.url),
-  new URL("../dist/webhook.html", import.meta.url),
-);
+for (const name of ["webhook", "llm-rate-limiter", "url-shortener"])
+  copyFileSync(
+    new URL("../dist/index.html", import.meta.url),
+    new URL(`../dist/${name}.html`, import.meta.url),
+  );

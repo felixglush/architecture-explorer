@@ -1,3 +1,5 @@
+import type { DetailLevel } from "./core/types";
+import { availableDetailLevels } from "./core/detail";
 import { SlidersHorizontal } from "lucide-react";
 import { useProject } from "./core/project";
 interface Props {
@@ -12,8 +14,8 @@ interface Props {
   setPrivateFlows: (value: boolean) => void;
   follow: boolean;
   setFollow: (value: boolean) => void;
-  showDetails: boolean;
-  setShowDetails: (value: boolean) => void;
+  detailLevel: DetailLevel;
+  setDetailLevel: (value: DetailLevel) => void;
 }
 /** Project-neutral focus presets and progressively disclosed display controls. */
 export function CanvasToolbar(props: Props) {
@@ -32,6 +34,24 @@ export function CanvasToolbar(props: Props) {
           </button>
         ))}
       </div>
+      <label className="detail-level">
+        Level of detail
+        <select
+          aria-label="Level of detail"
+          value={props.detailLevel}
+          onChange={(e) => props.setDetailLevel(e.target.value as DetailLevel)}
+        >
+          {availableDetailLevels(model).map((level) => (
+            <option key={level} value={level}>
+              {level === "overview"
+                ? "Overview"
+                : level === "implementation"
+                  ? "Implementation"
+                  : "Code"}
+            </option>
+          ))}
+        </select>
+      </label>
       <details className="display-settings">
         <summary>
           <SlidersHorizontal size={14} />
@@ -53,16 +73,6 @@ export function CanvasToolbar(props: Props) {
               ))}
             </select>
           </label>
-          {model.components.some((c) => c.detail) && (
-            <label>
-              <input
-                type="checkbox"
-                checked={props.showDetails}
-                onChange={(e) => props.setShowDetails(e.target.checked)}
-              />
-              Implementation details
-            </label>
-          )}
           <label>
             <input
               type="checkbox"

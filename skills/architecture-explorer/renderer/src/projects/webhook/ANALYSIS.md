@@ -14,8 +14,15 @@ service. Source snapshots are bundled directly from that file at build time.
 
 The producer, delivery service, and consumer are logical teaching boundaries, not
 separate deployed processes. Queue and worker source references intentionally point
-to the same small simulation function. The receiver and ledger share receive.
+to the same small simulation function. The receiver delegates duplicate detection to claimEvent. scheduleRetry owns the
+retry mutation.
 Connection descriptions identify their backing call/state operation.
+
+## Detail levels
+
+Overview shows publisher, worker and receiver (3 nodes). Implementation adds the
+queue and ledger (5). Code adds receive, claimEvent and scheduleRetry (8), each
+linked to its actual source. Hidden edges and highlights map to their owners.
 
 ## Walkthrough
 
