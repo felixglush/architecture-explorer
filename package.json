@@ -1,0 +1,33 @@
+{
+  "name": "architecture-explorer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Agent-authored architecture canvases for any codebase",
+  "engines": {
+    "node": ">=24"
+  },
+  "bin": {
+    "architecture-explorer": "skills/architecture-explorer/scripts/init.mjs"
+  },
+  "files": [
+    "skills/",
+    "scripts/",
+    ".claude-plugin/",
+    "README.md",
+    "AGENTS.md",
+    "NOTICE.md",
+    "tests/",
+    "docs/",
+    "plugin.json",
+    ".agents/plugins/"
+  ],
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "check": "npm --prefix skills/architecture-explorer/renderer run check",
+    "build": "npm --prefix skills/architecture-explorer/renderer run build",
+    "test:browser": "npm --prefix skills/architecture-explorer/renderer run test --",
+    "install:codex": "node scripts/install-codex.mjs",
+    "pack:release": "npm pack --pack-destination ."
+  }
+}
