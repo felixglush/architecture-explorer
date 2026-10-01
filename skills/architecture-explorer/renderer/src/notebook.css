@@ -700,3 +700,177 @@ summary:focus-visible {
     margin-left: 0;
   }
 }
+
+/* The guide shares the inspector slot and the replay cursor. */
+.step-guide {
+  width: 400px;
+  flex: 0 0 400px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--rule);
+  background: #fffefa;
+}
+.step-guide-heading {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--rule);
+}
+.step-guide-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.step-guide h2 {
+  font:
+    22px Georgia,
+    serif;
+  margin: 8px 0;
+}
+.step-guide p,
+.step-guide small {
+  font-size: 12px;
+  line-height: 1.55;
+  color: #737d6c;
+  overflow-wrap: anywhere;
+}
+.step-guide-heading nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+}
+.step-guide-heading nav span {
+  margin-left: auto;
+  font-size: 12px;
+}
+.guide-steps {
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+  flex: 0 1 38%;
+  min-height: 105px;
+  overflow: auto;
+  position: relative;
+  border-bottom: 1px solid var(--rule);
+}
+.guide-step {
+  display: flex;
+  gap: 10px;
+  text-align: left;
+  width: 100%;
+  padding: 12px 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.guide-step[aria-current="step"] {
+  background: #e8eedf;
+}
+.guide-number {
+  flex: 0 0 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f0f0e9;
+  font-size: 12px;
+}
+.guide-step[aria-current="step"] .guide-number {
+  background: #485e47;
+  color: white;
+}
+.guide-step strong {
+  font-size: 12px;
+  display: block;
+}
+.guide-step small {
+  display: block;
+  margin-top: 4px;
+}
+.guide-details {
+  overflow: auto;
+  min-height: 100px;
+  flex: 1 1 42%;
+  padding: 16px 20px;
+}
+.guide-details h3 {
+  font-size: 14px;
+  margin: 0 0 12px;
+}
+.guide-details h4 {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 18px 0 10px;
+}
+.guide-details h5 {
+  margin: 8px 0;
+}
+.guide-flow {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.guide-flow button,
+.guide-component > button {
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  color: #435c47;
+  cursor: pointer;
+  font-size: 12px;
+}
+.guide-flow button span {
+  display: block;
+  margin-top: 5px;
+}
+.guide-flow p {
+  margin: 6px 0 0;
+}
+.guide-component {
+  margin: 12px 0;
+}
+.guide-component > button {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-weight: 600;
+}
+.guide-component small {
+  display: block;
+}
+.guide-details summary {
+  cursor: pointer;
+  font-size: 11px;
+  margin-top: 8px;
+}
+.guide-details pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: #f6f5ef;
+  padding: 10px;
+  font-size: 11px;
+}
+.guide-decision {
+  background: var(--decision-bg);
+  border-left: 3px solid var(--decision-color);
+  padding: 10px;
+}
+.run-player.run-guided {
+  height: auto;
+  flex-shrink: 0;
+}
+.run-main[hidden],
+.run-toolbar button[hidden] {
+  display: none;
+}
+@media (max-width: 1000px) {
+  .step-guide {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: min(400px, 100%);
+    z-index: 20;
+  }
+}

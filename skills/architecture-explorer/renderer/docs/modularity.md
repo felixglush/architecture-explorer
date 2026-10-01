@@ -101,3 +101,15 @@ Validate meaningful structure and source links at every supported level, and rep
 the same flow through each. Clearly distinguish observed execution from synthetic
 walkthroughs. The bundled webhook, LLM limiter and URL shortener are examples of
 adapter authoring, not required architecture templates for other repositories.
+
+
+## Step guide
+
+`StepGuide` consumes the existing replay cursor, trace, connections and optional
+snapshot adapter. Its numbered sequence and the timeline navigate the same events.
+The panel shares the inspector slot: inspecting a flow or component opens the
+inspector, and Back to step guide restores the guide at the same cursor. The guide
+shows original traced endpoints even when the canvas aggregates them at a coarser
+detail level. It never infers ordering among a step's edges or parses domain payloads.
+While the guide is visible, RunPlayer retains transport and decision controls and
+hides its duplicate narrative/journal. Closing the guide restores the full notebook.

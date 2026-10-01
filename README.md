@@ -8,6 +8,7 @@ and important flows.
 - Switch detail from Overview to Implementation to Code, when the canvas provides those levels.
 - Click a component to inspect its source code, state ownership, and input/output contracts.
 - Step through an example or recorded flow to follow messages and state changes, when available.
+- Open **Step guide** during replay for numbered steps, data routes, payloads, and available before/after state.
 - Share the canvas as a single HTML file that opens in a browser without a server.
 
 ## Try it

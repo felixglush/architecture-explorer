@@ -98,3 +98,13 @@ Validate meaningful structure and source links at every supported level, and rep
 the same flow through each. Clearly distinguish observed execution from synthetic
 walkthroughs. The bundled webhook, LLM limiter and URL shortener are examples of
 adapter authoring, not required architecture templates for other repositories.
+
+
+## Guided flow narration
+
+The replay's **Step guide** uses each event's `trace.title`, `trace.body`, `nodes`
+and `edges` to explain the flow beside the canvas. Write concise, evidence-backed
+step titles and explanations of what moves, what changes, and why. Reference actual
+connection IDs and give connections useful descriptions. Provide snapshots and
+input/output payloads only when supported by evidence; missing state is shown as
+unavailable. There is no separate tour schema or duplicate step sequence to maintain.
